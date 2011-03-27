@@ -1,15 +1,11 @@
-<!--Particle Simulator by Ames Bielenberg, with additional code by Jonathan Gluck 
-3/25/2010-->
+<html>
+<head>
+<title>particles</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucen">
 
-<html> 
-<head> 
-<title>particles</title> 
-<link rel="icon" type="image/png" href="favicon.png"> 
-<meta name="apple-mobile-web-app-capable" content="yes"> 
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"> 
-<script type="text/javascript" src="raphael.js"></script> 
-
-<style> 
+<style>
 body{
 	background-color:#FFE7BD;
 	margin:0px;	
@@ -32,67 +28,42 @@ body{
 	-webkit-border-radius: 100px;
 	border-radius: 100px;
 }
-
-.bio{
-	position:absolute;
-	background-color:green;
-	-moz-border-radius: 300px;
-	-webkit-border-radius: 300px;
-	border-radius: 300px;
-}
-
-
 #message{
 	font-family: Lucida Grande, Lucida, sans-serif;
 	color:#882908;
 	padding:10px;
 }
 
-</style> 
- 
- 
-<script> 
+</style>
+
+<script>
+
 var container;
 var msgDiv;
- 
+
 var particles=[];
- 
+
 var gravityX=0;
 var gravityY=.3;
 var fricAir=.999;
 var fricWall=.8;
- 
+
 //fricAir=1;
 //fricWall=1;  		if(e.keyCode==88){ //x
- 
- 
+
+
 var defRad=20;
- 
+
 var stepsize=1;
- 
+
 var mouseStart={x:0,y:0};
- 
+
 var dims={w:0,h:0};
- 
+
 var run=true;
- 
+
 var avgShake=0;
- 
-var gravMode=true;
- 
-var targetX = 0;
-var targetY = 0;
-var minTarg = -1;
-var maxTarg = 1;
-var canvas;
 
-
-/*
-var decX=false;
-var decY=false;
-var incX=false;
-var incY=false;
-*/
 var fadeMsg=function(){
 	
 	if(msgDiv.style.opacity>.15){
@@ -101,34 +72,25 @@ var fadeMsg=function(){
 		msgDiv.style.opacity=0;
 	}
 }
- 
+
 var message=function(msg){
 	
 	msgDiv.innerHTML=msg;
 	
 	msgDiv.style.opacity=4;
 }
- 
- 
-function Particle(x_,y_,vx_,vy_,r_,typ,insanity){
+
+
+function Particle(x_,y_,vx_,vy_,r_){
 	
 	var density=.001;
-	this.type = typ||"particle";
-
+	
 	var div=document.createElement('div');
-	div.className=this.type;
+	div.className="particle";
 	container.appendChild(div);
- 
+
 	var T=this;
-		if(insanity){
-		this.crazy=true
-		if(this.type=="bio"){div.style.backgroundColor="#7A991F";}
-	}else{
-		this.crazy=false
-	}
-	this.willRemove=false;
-	this.targetR = 0;
-	this.growing = false;
+
 	T.x=x_||0;
 	T.y=y_||0;
 	T.r=r_||10;
@@ -140,8 +102,8 @@ function Particle(x_,y_,vx_,vy_,r_,typ,insanity){
 	T.m=Math.PI*T.r*T.r*density;
 	
 	div.style.width=div.style.height=T.r*2+'px';
- 
- 
+
+
 	this.doWalls=function(){
 		
 			if(T.x>=dims.w-T.r){
@@ -166,51 +128,9 @@ function Particle(x_,y_,vx_,vy_,r_,typ,insanity){
 	}
 	
 	this.doPhys=function(){
-			//handle bio attraction
-			
-			// var minDist=1000;
-			// var closest=null;
-			
-			for(var i=0;i<particles.length;i++){
-				var victim=particles[i];
-				
-				if(T.canEat(victim)){
-					// victim.setColor("#FE631C");
-					// var thisDist=Math.dist(victim.x-T.x,victim.y-T.y);
-					// if(thisDist<minDist){
-						// closest=victim;
-						// minDist=thisDist;
-					// }
-					
-					var dx=victim.x-T.x;
-					var dy=victim.y-T.y;
-					
-					var dist=Math.dist(dx,dy);
-					if(!this.crazy){
-						T.vx+=dx/(dist*dist)*10;
-						T.vy+=dy/(dist*dist)*10;
-					}
-					//crazy:
-					if(this.crazy){
-						T.vx+=1/dx;
-						T.vy+=1/dy;
-					}
-					
-					
-					// T.vx+=(victim.x-T.x)/Math.abs(victim.x-T.x)*.1;
-					// T.vy+=(victim.y-T.y)/Math.abs(victim.y-T.y)*.1;
-				}
-			}
-			
-			// if(closest){
-				// closest.setColor('red');
-			
-				// T.x+=1/minDist*(closest.x-T.x)/Math.abs(closest.x-T.x)*1000;
-				// T.y+=1/minDist*(closest.y-T.y)/Math.abs(closest.y-T.y)*1000;
-			// }
-			
-			T.vx+=gravityX;
-			T.vy+=gravityY;
+
+			this.vx+=gravityX;
+			this.vy+=gravityY;
 			
 			T.vx*=fricAir;
 			T.vy*=fricAir;
@@ -218,120 +138,60 @@ function Particle(x_,y_,vx_,vy_,r_,typ,insanity){
 			T.x+=T.vx*stepsize;
 			T.y+=T.vy*stepsize;
 	}
- 
-	this.doCollide=function(p,ind){
+
+	this.doCollide=function(p){
 		
 		var p1=this;
 		var p2=p;
-		var index = ind
 		
 		var dx = p2.x-p1.x; //dist
 		var dy = p2.y-p1.y;
 		
 		var dm=Math.dist(dx,dy); //dist mag
- 
+
 		if(dm<(p1.r+p2.r)){
 			
-			if(p1.canEat(p2)){
-				p1.eat(p2);
-			}else if(p2.canEat(p1)){
-				p2.eat(p1)
-			}else{
-				//handle eat
-				//alert(collision!);
+			//alert(collision!);
 									
-				//we should do the force-sum thing
+			//we should do the force-sum thing
 		
 		
-				//  vN = V dot a
+			//  vN = V dot a
 			
 		
-				//var a=Math.atan2(p2.y-p1.y,p2.x-p1.x); //collision angle
+			//var a=Math.atan2(p2.y-p1.y,p2.x-p1.x); //collision angle
 			
-				if(!dm)dm+=.001; //don't divide by 0 :)
- 
-				var dxu=dx/dm;  //dist unit
-				var dyu=dy/dm;
-				
-				var vn1 = p1.vx*dxu + p1.vy*dyu;
-				var vn2 = p2.vx*dxu + p2.vy*dyu;
-										
-				var vom=(vn2-vn1)/(p1.m+p2.m)*2;// v/m
-				
-				p1.vx+=vom*dxu*p2.m;
-				p1.vy+=vom*dyu*p2.m;
-				
-				p2.vx-=vom*dxu*p1.m;
-				p2.vy-=vom*dyu*p1.m;
-	 
-							
-				//uncollide
-				var dma = dm-p1.r-p2.r//adjusted for radius
-	 
-				p1.x+=(dma*dxu)/2;
-				p1.y+=(dma*dyu)/2;
-				
-				p2.x-=(dma*dxu)/2;
-				p2.y-=(dma*dyu)/2;
-			}
- 
+			if(!dm)dm+=.001; //don't divide by 0 :)
+
+			var dxu=dx/dm;  //dist unit
+			var dyu=dy/dm;
+			
+			var vn1 = p1.vx*dxu + p1.vy*dyu;
+			var vn2 = p2.vx*dxu + p2.vy*dyu;
+									
+			var vom=(vn2-vn1)/(p1.m+p2.m)*2;// v/m
+			
+			p1.vx+=vom*dxu*p2.m;
+			p1.vy+=vom*dyu*p2.m;
+			
+			p2.vx-=vom*dxu*p1.m;
+			p2.vy-=vom*dyu*p1.m;
+
+						
+			//uncollide
+			var dma = dm-p1.r-p2.r//adjusted for radius
+
+			p1.x+=(dma*dxu)/2;
+			p1.y+=(dma*dyu)/2;
+			
+			p2.x-=(dma*dxu)/2;
+			p2.y-=(dma*dyu)/2;
+
 		}
- 
+
 	}
-	this.canEat = function canEat(p2){
-		return this.type == "bio" && ((p2.type!="bio" && this.r>p2.r)||(this.r>p2.r*1.5)) && !this.willRemove;
-	}
-	this.shrink = function shrink(){
-		if(this.r>110){
-			this.split()
-			return 0;
-		}
-		if(this.r < 3){
-			this.remove()
-		}else if(this.growing){
-			if(this.targetR>5){
-				this.setR(this.r+this.targetR/50);
-				this.targetR-=this.targetR/50;
-				this.growing=false;
-				this.targetR = 0;
-			}
-		}
-		else{
-			this.setR(this.r*.999)
-		}
-	}
-	
-	this.split=function split(){
-		if(!this.willRemove){
-			if(!this.crazy){
-				if(Math.random()>.3){insanity = false;}else{insanity = true;}
-			}else{if(Math.random()>.3){insanity = true;}else{insanity=false;}}
-			new Particle(this.x-Math.random(),this.y-Math.random(),0,0,this.r/2,"bio",insanity);
-			if(Math.random()>.3){insanity = false;}else{insanity = true;}
-			if(!this.crazy){
-				if(Math.random()>.3){insanity = false;}else{insanity = true;}
-			}else{if(Math.random()>.3){insanity = true;}else{insanity=false;}}
-			new Particle(this.x,this.y,0,0,this.r/2,"bio",insanity);
-		}
-		this.remove();
-	}
-	
-	this.eat=function eat(p2){
-		this.vx=(p2.vx*p2.m+this.vx*this.m)/(this.m+p2.m);
-		this.vy=(p2.vy*p2.m+this.vy*this.m)/(this.m+p2.m);	
-		//this.setR(Math.dist(this.r,p2.r));
-		this.targetR += Math.dist(this.r,p2.r);
-		this.growing = true;
-		if(this.r>=110){
-			this.split();
-		}
-		p2.remove();
-	
-	}
+
 	this.update=function update(){
-		if(this.type=="bio"){
-			this.shrink()
-		}
 		div.style.left=this.x-this.r+'px';
 		div.style.top=this.y-this.r+'px';
 	}
@@ -340,14 +200,13 @@ function Particle(x_,y_,vx_,vy_,r_,typ,insanity){
 		this.r=r_;
 		div.style.width=this.r*2;
 		div.style.height=this.r*2;		
-		this.m=Math.PI*this.r*this.r*density;
 	}
 	
-	this.remove=function remove(){
-		if(!this.willRemove){
-			container.removeChild(div);
-			this.willRemove=true;
-		}
+	this.remove=function(){
+		
+		container.removeChild(div);
+		
+
 	}
 	
 	this.setColor=function(newColor){
@@ -356,21 +215,15 @@ function Particle(x_,y_,vx_,vy_,r_,typ,insanity){
 	
 	this.doWalls();
 	this.update();
+
 	particles.push(this);
 }
 
 
- 
+
 function step(){
 	
 	if(run){
-	
-		if(!gravMode){
-			gravityX += (targetX - gravityX)* .05;
-			gravityY += (targetY - gravityY)* .05;
-			showGravity();
-		}
-		gravDraw();
 		
 		var i;
 		
@@ -378,55 +231,32 @@ function step(){
 		
 		//collisions!
 		
-		//for each particle
 		for(var i1 in particles){
-			// for each particle farther in the list (upper right triangle)
 			for(var i2=i1;i2<particles.length;i2++){
-				//if not on the diagonal
 				if(i1!=i2){
-					//calculate collision
-					particles[i1].doCollide(particles[i2],i2);
+					particles[i1].doCollide(particles[i2]);
 				}
 			}
 		}
 		
-		//define energy
 		var energy=0;
-		var bioExists=false;
-		
-		//for each particle
-		for(i in particles){
-			var p=particles[i]; //get that particle
-			var vel=Math.dist(p.vx,p.vy); //velocity = that
-			energy+=vel*vel*p.m/2; //add to the total energy? velocity^2 time the mass /2 
-			
-			if(p.type=='bio')bioExists=true;
+		for(var i in particles){
+			var p=particles[i];
+			var vel=Math.dist(p.vx,p.vy);
+			energy+=vel*vel*p.m/2;
 		}
-		
 		//message(energy);
-		if(!bioExists){
-			if(energy>10000){
-				new Particle(dims.w/2,dims.h/2,0,0,30,"bio");
-			}
-		}
 		
 		
-		for(i in particles){
+		for(var i in particles){
 			particles[i].doWalls();
 			particles[i].update();
 		}
 		
-		for(var i=particles.length-1;i>=0;i--){
-			if(particles[i].willRemove){
-				particles.splice(i,1);
-			}
-		}
-
-		
 	}
 	
 }
- 
+
 document.onmousedown=function mousedown(e){
 	mouseStart.x=e.clientX;
 	mouseStart.y=e.clientY;	
@@ -435,67 +265,48 @@ document.onmouseup=function mouseup(e){
 	new Particle(e.clientX,e.clientY,(e.clientX-mouseStart.x)*.1,(e.clientY-mouseStart.y)*.1,defRad);
 	
 }
- 
+
 window.onresize=function resize(){
 	dims.w=container.clientWidth;
 	dims.h=container.clientHeight;
-	
-	canvas.canvas.style.left=(dims.w*(4/5))+'px';
-	canvas.setSize(dims.w*(1/5),dims.w*(1/5));
-	centerCircle.attr({"cx":dims.w/10,"cy":dims.w/10,"r":15,"fill":"white",'stroke':'red','opacity':.5});
-	vCross.attr('path',"M"+dims.w/10+" "+((dims.w/10)+15)+"L"+dims.w/10+ " "+ ((dims.w/10)-15));
-	vCross.attr('stroke','red');
-	hCross.attr('path',"M"+((dims.w/10)+15) + " " + dims.w/10 + "L"+((dims.w/10)-15)+ " "+dims.w/10);
-	hCross.attr('stroke','red');
-}	
- 
- 
+}
+
+
 function handleOrientation(e){
 	E=e;
 	
 	//message(e.x+', '+e.y);
- 
+
 	gravityX=e.x;
 	gravityY=e.y;
- 
+
 }
- 
+
 window.addEventListener("devicemotion", function(event) {
           // Process event.acceleration, event.accelerationIncludingGravity,
           // event.rotationRate and event.interval
-         accX = event.acceleration.x;
-		 accY = event.acceleration.y;
-		 accZ = event.acceleration.z;
-		if(!accX){
-			accX = 0;
-		}
-		if(!accY){
-			accY = 0;
-		}
-		if(!accZ){
-			accZ = 0;
-		}
-          avgShake=(avgShake*9+Math.dist(accX,accY,accZ))/10;
+          
+          avgShake=(avgShake*9+Math.dist(event.acceleration.x,event.acceleration.y,event.acceleration.z))/10;
           
          message(avgShake);
 //          
 //          document.body.style.backgroundColor="#"+parseInt(avgShake*16, 16)+"0000";
- 
-	if(avgShake>8){
+
+	if(avgShake>10){
 		
 				for(var i in particles){
 					particles[i].remove();
 				}
 				particles=[];
- 
+
 	}
 //          
       }, true);
- 
+
 window.addEventListener("MozOrientation", handleOrientation, true);
- 
+
 var E;
- 
+
 window.ondeviceorientation=function(e){
 	
 	E=e;
@@ -506,7 +317,7 @@ window.ondeviceorientation=function(e){
 	gravityX=e.gamma/90;
 	
 }
- 
+
 //
 //window.ondevicemotion=function(e){
 //	
@@ -515,8 +326,8 @@ window.ondeviceorientation=function(e){
 //	gravityX=e.accelerationIncludingGravity.x/5;
 //	gravityY=-e.accelerationIncludingGravity.y/5;
 //}
- 
- 
+
+
 //this doesn't work right
 touchMove=function(e){
 	
@@ -524,98 +335,21 @@ touchMove=function(e){
 	
 	//message(e);
 	
-	for(var i=0;i<e.changedTouches.length;i++){
-		var touch=e.changedTouches[i];
-		
-		new Particle(touch.clientX,touch.clientY,0,0,Math.random()*defRad/3*2+defRad/3);	
-	}
+	
+	var touch=e.changedTouches[0];
+	
+	new Particle(touch.clientX,touch.clientY,0,0,Math.random()*defRad/3*2+defRad/3);	
 	
 //	return false;
 }
- 
-//var lastEvent;
- 
-function setTargets(){
-	temp = prompt("Enter Maximum Tilt", "Suggested between 0 and 1");
-	if(isNaN(temp)){
-		maxTarg = 1;
-	}else{
-		maxTarg = temp;
-	}
-	minTarg = -maxTarg;
-}
- 
-function gravDraw(){
-	var centerX = canvas.width/2;
-	var centerY = canvas.height/2;
-	scaledX = gravityX*(dims.w/10.7);
-	scaledY = gravityY*(dims.w/10.7);
-	possibleBound = Math.abs(dims.w/10);
-	aSX = Math.abs(scaledX);
-	aSY = Math.abs(scaledY);
-	//var len = Math.sqrt(Math.pow(gravityX,2)+Math.pow(gravityY,2))*(dims.w/10)
-	color = "#f00"
-	if(aSX>possibleBound){
-		if(aSY>possibleBound){
-			prefixX = (scaledX/aSX);
-			prefixY = (scaledY/aSY);
-		}else{
-			prefixX = (scaledX/aSX);
-			prefixY = gravityY;
-		}
-	}else if(aSY>possibleBound){
-			prefixX = gravityX;
-			prefixY = (scaledY/aSY);
-	}else{
-		prefixX = gravityX;
-		prefixY = gravityY;
-		color = "#28a8ff"
-	}
-	
-	var svgText = "M"+centerX+" "+centerY+"l"+prefixX*(dims.w/10.7)+" "+prefixY*(dims.w/10.7);
-	
-	//message(svgText);
-	linePath.attr('path',svgText);
-	linePath.attr('stroke-width',25);
-	linePath.attr('stroke-linecap','round');
-	linePath.attr('stroke',color);
-	linePath.attr('stroke-opacity',((Math.abs(gravityX)/maxTarg)+(Math.abs(gravityY)/maxTarg))/2);
-	//var arrow = canvas.pat(svgText);
-}
- 
-function init(){
 
-	document.onkeyup=function(e){
-		switch(e.keyCode){
-			case 38: //up
-				if(!gravMode){
-					targetY = 0;
-				}
-				break;
-				
-			case 40: //down
-				if (!gravMode){
-					targetY = 0;
-				}
-				break;
-				
-			case 39: //right
-				if (!gravMode){
-					targetX=0;
-				}
-				break;
-				
-			case 37: //left
-				if(!gravMode){
-					targetX=0;
-				}
-				break;
-		}
-	}
+//var lastEvent;
+
+function init(){
 	
 	document.onkeydown=function(e){
 		//lastEvent=e;
-		//message(e.keyCode)
+		
 		switch(e.keyCode){
 			
 			case 32: //space
@@ -633,111 +367,60 @@ function init(){
 					               Math.random()*defRad/3*2+defRad/3);
 				}
 				break;
-			case 89://y
-				setTargets();
-				break;
-			case 84: //t
-				gravMode = !gravMode;
-				if(!gravMode){
-					message("Realistic Tilt");
-				}else{
-					message("Infinite Gravity");
-				}
-				
-				break;
+			
 			case 88: //x
 				for(i in particles){
 					particles[i].remove();
 				}
 				particles=[];
- 
+
 				break;
 				
 			case 66: //b
-				new Particle(dims.w/2,dims.h/2,0,0,100);
-				break;
-			
-			case 86://v for voracious
-				new Particle(dims.w/2,dims.h/2,0,0,30,"bio");
+				new Particle(dims.w/2,dims.h/2,0,0,100)
 				break;
 				
-			case 67: //c for craaazy
-				new Particle(dims.w/2,dims.h/2,0,0,30,"bio",true);
-				break;
-			
 			case 38: //up
-				if(gravMode){
-					gravityY-=.1;
-				}else{
-					targetY = minTarg;
-				}
+				gravityY-=.1;
 				showGravity();
 				break;
-				
 			case 40: //down
-				if (gravMode){
-					gravityY+=.1;
-				}
-				else{
-						targetY= maxTarg;
-				}
+				gravityY+=.1;
 				showGravity();
 				break;
-				
 			case 39: //right
-				if (gravMode){
-					gravityX+=.1;
-				}else{
-						targetX= maxTarg;
-				}
+				gravityX+=.1;
 				showGravity();
 				break;
-				
 			case 37: //left
-				if(gravMode){
-					gravityX-=.1;
-				}else{
-						targetX=minTarg;
-				}
+				gravityX-=.1;
 				showGravity();
 				break;
-			case 70: //f
-				freeze();
-				break;
-			
 		}
-
 		
 		//message(e.keyCode);
 	}
-
-	canvas=new Raphael(0,0,50,50);
-	centerCircle = canvas.circle()
-	linePath = canvas.path();
-	vCross = canvas.path();
-	hCross = canvas.path();
-	
 	
 	msgDiv=document.getElementById("message");
- 
+
 	container=document.getElementById("container");
 	window.onresize();
+	
 	container.addEventListener("touchmove", touchMove, false);
- 
 
- 
+
 	setInterval('step()',40);
 	
- 
-	message("try K, space, X, drag, tilt, B, arrows, T=toggle tilt mode");
- 
+
+	message("try K, space, X, drag, tilt, B, arrows");
+
 	setInterval('fadeMsg()',250);
 	
- 
+
 //	new Particle(  dims.w/3,dims.h/2, .01*dims.w/3,  .005*dims.h/2,defRad);
 //	new Particle(2*dims.w/3,dims.h/2, -.01*dims.w/3,-.005*dims.h/2,defRad);
 //	new Particle( dims.w/3,1.5*dims.h/2, .01*dims.w/3,-.004*dims.h/2,defRad);
- 
+
 //	particles[1].setColor("#F00");
 	
 //	new Particle(  dims.w/6*.5,dims.h/2, .05*dims.w/3,  0,defRad*1);
@@ -746,12 +429,12 @@ function init(){
 //	new Particle(  dims.w/6*3,dims.h/2, 0,  .0,defRad*1);
 //	new Particle(  dims.w/6*4,dims.h/2, 0,  .0,defRad*1);
 //	new Particle(  dims.w/6*5,dims.h/2, 0,  .0,defRad*1);
- 
+
 //
 //	new Particle(  dims.w-defRad,dims.h-defRad, 0,  .0,defRad);
 //	new Particle(  dims.w/3*2,dims.h-defRad*2.13, 10,  .0,defRad);
 //	new Particle(  dims.w/3*2,dims.h-defRad-Math.sqrt((defRad*defRad)/2)*3/2, 10,  .0,defRad);
- 
+
 //var nParts=5;
 //for(var i=1;i<nParts;i++){
 //	
@@ -761,36 +444,27 @@ function init(){
 //}
 //
 //
- 
+
 }
- 
- 
- var freeze=function freeze(){
-	 for(var i=0;i<particles.length;i++){
-		 particles[i].vx=0;
-		 particles[i].vy=0
-	 }
- }
- 
+
 var showGravity=function(){
 	message("gravity: "+gravityX.toFixed(2)+", "+gravityY.toFixed(2));
-//	message("gravity: "+gravityX+", "+gravityY);
 }
- 
+
 Math.dist=function(a,b){
 	return Math.sqrt(a*a+b*b);
 }
- 
-</script> 
- 
-</head> 
-<body onload="init()"> 
- 
- 
-<div id='container'> 
-	<div id='message'></div> 
- 
-</div> 
- 
-</body> 
+
+</script>
+
+</head>
+<body onload="init()">
+
+
+<div id='container'>
+	<div id='message'></div>
+
+</div>
+
+</body>
 <html>
