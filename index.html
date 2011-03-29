@@ -707,11 +707,14 @@ function init(){
 				}
 				showGravity();
 				break;
-			case 70: //f
+				
+		 case 70: //f
 				freeze();
 				break;
-			case 82: //r
+				
+		 case 82: //r
 				fear = !fear;
+				if(fear){message("RUN!");}else{message("meh..");}
 				break;
 			
 		}
