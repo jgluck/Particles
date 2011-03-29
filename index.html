@@ -18,6 +18,18 @@ body{
 	font-size:20px;
 	
 }
+
+#helpDisplay{
+	width:30%;
+	height:30%;
+	background-color:#cccccc;
+	opacity:0;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	border-radius: 10px;
+	text-align:center;
+}
+
 #container{
 	width:100%;
 	height:100%;
@@ -55,7 +67,8 @@ body{
 <script> 
 var container;
 var msgDiv;
- 
+var helpDiv;
+
 var particles=[];
  
 var gravityX=0;
@@ -102,7 +115,13 @@ var message=function(msg){
 	
 	msgDiv.style.opacity=4;
 }
+ setInterval('fadeMsg()',250);
  
+var toggleHelp= function toggleHelp(){
+	//container.appendChild(div);
+	//if(helpDiv.style.opacity!=0){setInterval('fadeHelp()',1)}else{setInterval('fadeHelpIn,1');}
+	if(helpDiv.style.opacity!=0){helpDiv.style.opacity=0}else{helpDiv.style.opacity=.5}
+}
  
 function Particle(x_,y_,vx_,vy_,r_,typ,insanity){
 	
@@ -636,6 +655,10 @@ function init(){
 				}
 				
 				break;
+			case 191: //?
+				toggleHelp();
+				break;
+				
 			case 88: //x
 				for(i in particles){
 					particles[i].remove();
@@ -710,7 +733,7 @@ function init(){
 	
 	
 	msgDiv=document.getElementById("message");
- 
+	helpDiv = document.getElementById("helpDisplay");
 	container=document.getElementById("container");
 	window.onresize();
 	container.addEventListener("touchmove", touchMove, false);
@@ -720,7 +743,7 @@ function init(){
 	setInterval('step()',40);
 	
  
-	message("try K, space, X, drag, tilt, B, arrows, T=toggle tilt mode");
+	message("Question Mark For Help");
  
 	setInterval('fadeMsg()',250);
 	
@@ -780,7 +803,8 @@ Math.dist=function(a,b){
  
 <div id='container'> 
 	<div id='message'></div> 
- 
+	<div id='helpDisplay'> K = Spawn Many Particles<br \> Space Bar = Pause<br \> F = Freeze
+	<br \> B= Big Particle <br \>V = Voracious Bio<br \>C = Crazy Bio <br \> T = Toggle Gravity Mode</div>
 </div> 
  
 </body> 
