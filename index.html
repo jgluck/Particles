@@ -275,6 +275,7 @@ function Particle(x_,y_,vx_,vy_,r_,typ,insanity){
 	this.canEat = function canEat(p2){
 		return this.type == "bio" && ((p2.type!="bio" && this.r>p2.r)||(this.r>p2.r*1.5)) && !this.willRemove;
 	}
+
 	this.shrink = function shrink(){
 		if(this.r>110){
 			this.split()
@@ -282,10 +283,11 @@ function Particle(x_,y_,vx_,vy_,r_,typ,insanity){
 		}
 		if(this.r < 3){
 			this.remove()
-		}else if(this.growing){
+		}
+		else if(this.growing){
 			if(this.targetR>5){
-				this.setR(this.r+this.targetR/50);
-				this.targetR-=this.targetR/50;
+				this.setR(this.r+this.targetR/120);
+				this.targetR-=this.targetR/120;
 				this.growing=false;
 				this.targetR = 0;
 			}
