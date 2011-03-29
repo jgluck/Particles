@@ -77,7 +77,8 @@ var mouseStart={x:0,y:0};
 var dims={w:0,h:0};
  
 var run=true;
- 
+var fear = false;
+
 var avgShake=0;
  
 var gravMode=true;
@@ -195,6 +196,13 @@ function Particle(x_,y_,vx_,vy_,r_,typ,insanity){
 					// T.vx+=(victim.x-T.x)/Math.abs(victim.x-T.x)*.1;
 					// T.vy+=(victim.y-T.y)/Math.abs(victim.y-T.y)*.1;
 				}
+				else if(T.shouldFear(victim)){
+					var dx=victim.x-T.x;
+					var dy = victim.y-T.y;
+					var dist = Math.dist(dx,dy);
+					T.vx-=dx/(dist*dist)*10;
+					T.vy-=dy/(dist*dist)*10;
+				}
 			}
 			
 			// if(closest){
@@ -273,9 +281,15 @@ function Particle(x_,y_,vx_,vy_,r_,typ,insanity){
 		}
  
 	}
+	
+	this.shouldFear=function shouldFear(p2){
+		return this.type == "particle" && p2.type == "bio" && fear;
+	}
+
 	this.canEat = function canEat(p2){
 		return this.type == "bio" && ((p2.type!="bio" && this.r>p2.r)||(this.r>p2.r*1.5)) && !this.willRemove;
 	}
+
 	this.shrink = function shrink(){
 		if(this.r>110){
 			this.split()
@@ -283,10 +297,11 @@ function Particle(x_,y_,vx_,vy_,r_,typ,insanity){
 		}
 		if(this.r < 3){
 			this.remove()
-		}else if(this.growing){
+		}
+		else if(this.growing){
 			if(this.targetR>5){
-				this.setR(this.r+this.targetR/50);
-				this.targetR-=this.targetR/50;
+				this.setR(this.r+this.targetR/120);
+				this.targetR-=this.targetR/120;
 				this.growing=false;
 				this.targetR = 0;
 			}
@@ -698,6 +713,9 @@ function init(){
 				break;
 			case 70: //f
 				freeze();
+				break;
+			case 82: //r
+				fear = !fear;
 				break;
 			
 		}
