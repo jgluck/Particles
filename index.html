@@ -282,7 +282,8 @@ function Particle(x_,y_,vx_,vy_,r_,typ,insanity){
 	}
 	
 	this.shouldFear=function shouldFear(p2){
-		return this.type == "particle" && p2.type == "bio" && fear && p2.canEat(T);
+		//return this.type == "particle" && p2.type == "bio" && fear && p2.canEat(T);
+		return fear && p2.canEat(T);
 	}
 
 	this.canEat = function canEat(p2){
@@ -315,12 +316,12 @@ function Particle(x_,y_,vx_,vy_,r_,typ,insanity){
 			if(!this.crazy){
 				if(Math.random()>.3){insanity = false;}else{insanity = true;}
 			}else{if(Math.random()>.3){insanity = true;}else{insanity=false;}}
-			new Particle(this.x-Math.random(),this.y-Math.random(),0,0,this.r/2,"bio",insanity);
+			new Particle(this.x-Math.random(),this.y-Math.random(),T.vx/2,T.vy/2,Math.sqrt((this.r*this.r)/2),"bio",insanity);
 			if(Math.random()>.3){insanity = false;}else{insanity = true;}
 			if(!this.crazy){
 				if(Math.random()>.3){insanity = false;}else{insanity = true;}
 			}else{if(Math.random()>.3){insanity = true;}else{insanity=false;}}
-			new Particle(this.x,this.y,0,0,this.r/2,"bio",insanity);
+			new Particle(T.x,T.y,-T.vx/2,-T.vy/2,Math.sqrt((this.r*this.r)/2),"bio",insanity);
 		}
 		this.remove();
 	}
