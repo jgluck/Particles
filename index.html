@@ -23,11 +23,15 @@ body{
 	width:30%;
 	height:30%;
 	background-color:#cccccc;
+	background-color: rgba(255,0,0,0.6);
 	opacity:0;
 	-moz-border-radius: 10px;
 	-webkit-border-radius: 10px;
 	border-radius: 10px;
 	text-align:center;
+	position:absolute;
+	top:10px;
+	left:10px;
 }
 
 #container{
@@ -803,9 +807,8 @@ Math.dist=function(a,b){
  
 <div id='container'> 
 	<div id='message'></div> 
-	<div id='helpDisplay'> K = Spawn Many Particles<br \> Space Bar = Pause<br \> F = Freeze
-	<br \> B= Big Particle <br \>V = Voracious Bio<br \>C = Crazy Bio <br \> T = Toggle Gravity Mode</div>
 </div> 
- 
+<div id='helpDisplay'> K = Spawn Many Particles<br \> Space Bar = Pause<br \> F = Freeze
+	<br \> B= Big Particle <br \>V = Voracious Bio<br \>C = Crazy Bio <br \> T = Toggle Gravity Mode</div>
 </body> 
 <html>
