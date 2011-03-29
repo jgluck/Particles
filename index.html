@@ -57,8 +57,7 @@ var container;
 var msgDiv;
  
 var particles=[];
-var bios = [];
-
+ 
 var gravityX=0;
 var gravityY=.3;
 var fricAir=.999;
@@ -367,7 +366,6 @@ function Particle(x_,y_,vx_,vy_,r_,typ,insanity){
 	this.doWalls();
 	this.update();
 	particles.push(this);
-	if(this.type == "bio"){bios.push(this);}
 }
 
 
@@ -432,10 +430,8 @@ function step(){
 				particles.splice(i,1);
 			}
 		}
-		for(var i=bios.length-1;i>=0;i--){
-			if(bios[i].willRemove){
-				bios.splice(i,1);
-			}
+
+		
 	}
 	
 }
@@ -711,11 +707,14 @@ function init(){
 				}
 				showGravity();
 				break;
-			case 70: //f
+				
+		 case 70: //f
 				freeze();
 				break;
-			case 82: //r
+				
+		 case 82: //r
 				fear = !fear;
+				if(fear){message("RUN!");}else{message("meh..");}
 				break;
 			
 		}
