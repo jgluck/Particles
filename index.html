@@ -282,7 +282,7 @@ function Particle(x_,y_,vx_,vy_,r_,typ,insanity){
 	}
 	
 	this.shouldFear=function shouldFear(p2){
-		return this.type == "particle" && p2.type == "bio" && fear;
+		return this.type == "particle" && p2.type == "bio" && fear && p2.canEat(T);
 	}
 
 	this.canEat = function canEat(p2){
