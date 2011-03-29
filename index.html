@@ -1,12 +1,11 @@
 <!--Particle Simulator by Ames Bielenberg, with additional code by Jonathan Gluck 
 3/25/2010-->
-
-<html> 
+<html manifest="particles.manifest"> 
 <head> 
 <title>particles</title> 
 <link rel="icon" type="image/png" href="favicon.png"> 
 <meta name="apple-mobile-web-app-capable" content="yes">
-<html manifest="particles.manifest"> 
+<link rel="apple-touch-icon" href="particle128.png">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"> 
 <script type="text/javascript" src="raphael.js"></script> 
 
@@ -72,10 +71,13 @@ body{
  
  
 <script> 
+
+
+
 var container;
 var msgDiv;
 var helpDiv;
-
+var webappCache;
 var particles=[];
  
 var gravityX=0;
@@ -107,6 +109,8 @@ var targetY = 0;
 var minTarg = -1;
 var maxTarg = 1;
 var canvas;
+
+
 
 var fadeMsg=function(){
 	
@@ -759,8 +763,13 @@ function init(){
 	linePath = canvas.path();
 	vCross = canvas.path();
 	hCross = canvas.path();
-	
-	
+	webappCache = window.applicationCache;
+	webappCache.addEventListener("error",errorCache,false);
+	webappCache.addEventListener("updateready",updateCache,false);
+	/*
+	if(navigator.onLine){
+		updateCache();
+	}*/
 	msgDiv=document.getElementById("message");
 	helpDiv = document.getElementById("helpDisplay");
 	container=document.getElementById("container");
@@ -819,7 +828,17 @@ var showGravity=function(){
 	message("gravity: "+gravityX.toFixed(2)+", "+gravityY.toFixed(2));
 //	message("gravity: "+gravityX+", "+gravityY);
 }
- 
+ var updateCache=function updateCache(){
+	webappCache.swapCache();
+}
+
+var errorCache=function errorCache(){
+
+	message("Cache failed to update");
+}
+
+
+
 Math.dist=function(a,b){
 	return Math.sqrt(a*a+b*b);
 }
