@@ -4,5 +4,8 @@ CACHE MANIFEST
 #html
 index.html
 
+#js
+raphael.js
+
 #images
 favicon.png
