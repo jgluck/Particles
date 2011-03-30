@@ -50,12 +50,13 @@ body{
 	-moz-border-radius: 120px;
 	-webkit-border-radius: 120px;
 	border-radius: 120px;
-
 }
 .particle>div{
-	display:box;
-	vertical-align:middle;
-	text-align:center;
+	position:absolute;
+	top:49%;
+	margin-top:-10px;
+	left:49%;
+	margin-left:-20px;
 }
 
 #message{
@@ -336,7 +337,8 @@ function Particle(x_,y_,vx_,vy_,r_,typ,insanity){
 		//	}
 	//	}
 	//	else{
-			this.setR(this.r*.999);
+		this.targetR*=.999;
+		//this.setR(this.r*.999);
 		//}
 	}
 	
