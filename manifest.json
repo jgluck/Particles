@@ -1,1 +1,11 @@
-{"name": "Particle and Behavior Simulation","description": "Particle Simulator with collisions, gravity, and hunter hunted mentality. Still very new. By Ames and Jon","version": "1","app": {"launch": {"local_path": "index.html"}},"icons": {"16":"favicon.png","24": "particle24.png","128":"particle128.png"},"permissions": ["unlimited_storage","notifications"]}
+{"name": "Particle and Behavior Simulation",
+"description": "Particle Simulator with collisions, gravity, and hunter hunted mentality. Still very new. By Ames and Jon",
+"version": "0.0.1",
+"app": {"launch": 
+	{"local_path": "index.html"}
+	},
+"icons": {
+	"16":"favicon.png",
+	"24": "particle24.png",
+	"128":"particle128.png"},
+"permissions": ["unlimited_storage","notifications"]}

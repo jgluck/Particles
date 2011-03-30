@@ -15,7 +15,7 @@ body{
 	margin:0px;	
 	
 	font-size:20px;
-	
+	font-family: Lucida Grande, Lucida, sans-serif;
 }
 
 #helpDisplay{
@@ -47,19 +47,16 @@ body{
 .particle{
 	position:absolute;
 	background-color:#FE631C;
-	-moz-border-radius: 100px;
-	-webkit-border-radius: 100px;
-	border-radius: 100px;
-}
+	-moz-border-radius: 120px;
+	-webkit-border-radius: 120px;
+	border-radius: 120px;
 
-.bio{
-	position:absolute;
-	background-color:green;
-	-moz-border-radius: 300px;
-	-webkit-border-radius: 300px;
-	border-radius: 300px;
 }
-
+.particle>div{
+	display:box;
+	vertical-align:middle;
+	text-align:center;
+}
 
 #message{
 	font-family: Lucida Grande, Lucida, sans-serif;
@@ -141,22 +138,24 @@ function Particle(x_,y_,vx_,vy_,r_,typ,insanity){
 	this.type = typ||"particle";
 
 	var div=document.createElement('div');
-	div.className=this.type;
+	div.className='particle';
 	container.appendChild(div);
+	
+ 	this.crazy=insanity;
+ 	
+ 	if(this.type=='bio')div.style.backgroundColor=this.crazy?"#7A991F":'green';
  
 	var T=this;
-		if(insanity){
-		this.crazy=true
-		if(this.type=="bio"){div.style.backgroundColor="#7A991F";}
-	}else{
-		this.crazy=false
-	}
+
 	this.willRemove=false;
-	this.targetR = 0;
 	this.growing = false;
+	
 	T.x=x_||0;
 	T.y=y_||0;
 	T.r=r_||10;
+	
+	this.targetR = this.r;
+
 	
 	T.vx=vx_||0;
 	T.vy=vy_||0;
@@ -165,7 +164,6 @@ function Particle(x_,y_,vx_,vy_,r_,typ,insanity){
 	T.m=Math.PI*T.r*T.r*density;
 	
 	div.style.width=div.style.height=T.r*2+'px';
- 
  
 	this.doWalls=function(){
 		
@@ -328,30 +326,29 @@ function Particle(x_,y_,vx_,vy_,r_,typ,insanity){
 		if(this.r < 3){
 			this.remove()
 		}
-		else if(this.growing){
-			if(this.targetR>5){
-				this.setR(this.r+this.targetR/120);
-				this.targetR-=this.targetR/120;
-				this.growing=false;
-				this.targetR = 0;
-			}
-		}
-		else{
-			this.setR(this.r*.999)
-		}
+		//else if(this.growing){
+		//	if(this.targetR>5){
+				this.setR(this.r+(this.targetR-this.r)/120);
+				//this.targetR-=this.targetR/120;
+		//	}else{ //
+		//		this.growing=false;
+			//	this.targetR = 0;
+		//	}
+	//	}
+	//	else{
+			this.setR(this.r*.999);
+		//}
 	}
 	
 	this.split=function split(){
 		if(!this.willRemove){
-			if(!this.crazy){
-				if(Math.random()>.3){insanity = false;}else{insanity = true;}
-			}else{if(Math.random()>.3){insanity = true;}else{insanity=false;}}
-			new Particle(this.x-Math.random(),this.y-Math.random(),T.vx/2,T.vy/2,Math.sqrt((this.r*this.r)/2),"bio",insanity);
-			if(Math.random()>.3){insanity = false;}else{insanity = true;}
-			if(!this.crazy){
-				if(Math.random()>.3){insanity = false;}else{insanity = true;}
-			}else{if(Math.random()>.3){insanity = true;}else{insanity=false;}}
-			new Particle(T.x,T.y,-T.vx/2,-T.vy/2,Math.sqrt((this.r*this.r)/2),"bio",insanity);
+			new Particle(this.x-Math.random(),this.y-Math.random(),
+				T.vx/2,T.vy/2,Math.sqrt((this.r*this.r)/2),"bio",
+				(Math.random()>.3)?this.crazy:!this.crazy);
+
+			new Particle(T.x,T.y,-T.vx/2,-T.vy/2,
+				Math.sqrt((this.r*this.r)/2),"bio",
+				(Math.random()>.3)?this.crazy:!this.crazy);
 		}
 		this.remove();
 	}
@@ -360,13 +357,12 @@ function Particle(x_,y_,vx_,vy_,r_,typ,insanity){
 		this.vx=(p2.vx*p2.m+this.vx*this.m)/(this.m+p2.m);
 		this.vy=(p2.vy*p2.m+this.vy*this.m)/(this.m+p2.m);	
 		//this.setR(Math.dist(this.r,p2.r));
-		this.targetR += Math.dist(this.r,p2.r);
+		this.targetR = Math.dist(this.targetR,p2.r);
 		this.growing = true;
-		if(this.r>=110){
-			this.split();
-		}
+//		if(this.r>=110){
+//			this.split();
+//		}
 		p2.remove();
-	
 	}
 	this.update=function update(){
 		if(this.type=="bio"){
@@ -381,6 +377,7 @@ function Particle(x_,y_,vx_,vy_,r_,typ,insanity){
 		div.style.width=this.r*2;
 		div.style.height=this.r*2;		
 		this.m=Math.PI*this.r*this.r*density;
+		div.innerHTML="<div>"+Math.round(this.r)+"</div>";
 	}
 	
 	this.remove=function remove(){
